@@ -1791,11 +1791,11 @@
 	"variable": [
 		{
 			"key": "api_ep",
-			"value": "192.168.40.97:5000"
+			"value": "10.176.27.73"
 		},
 		{
 			"key": "abot_endpoint",
-			"value": "192.168.40.76"
+			"value": "10.176.27.73"
 		},
 		{
 			"key": "token",
