@@ -27,9 +27,10 @@ jobs:
     - name: Create Reports Folder
       run: mkdir -p postman/newman/reports
 
-    - name: Inject dynamic tag into environment file
+    - name: Inject dynamic featureTag safely
       run: |
-        sed -i 's/"featureTags": *"[^"]*"/"featureTags": "${{ github.event.inputs.feature_tag }}"/' postman/ABot_Environment.json
+        jq '.values |= map(if .key == "featureTags" then .value = "${{ github.event.inputs.feature_tag }}" else . end)' postman/ABot_Environment.json > tmp.json && mv tmp.json postman/ABot_Environment.json
+
 
     - name: Run ABot Postman Collection
       id: abot_test
