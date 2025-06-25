@@ -3,7 +3,7 @@
   "name": "ABot Environment",
   "values": [
     {
-      "key": "abot_host",
+      "key": "abot_endpoint",
       "value": "http://10.176.27.73",
       "enabled": true
     },
@@ -14,12 +14,12 @@
     },
     {
       "key": "featureTags",
-      "value": "sanity",  // This will be overwritten by GitHub workflow
+      "value": "sanity", 
       "enabled": true
     },
     {
       "key": "latest_artifact_folder",
-      "value": "",  // This will be set automatically in request #6
+      "value": "",  
       "enabled": true
     }
   ],
