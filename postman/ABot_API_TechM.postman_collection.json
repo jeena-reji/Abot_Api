@@ -33,7 +33,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/login",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/login",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -63,7 +63,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/login",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/login",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
@@ -149,7 +149,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/feature_files",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/feature_files",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -170,7 +170,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/feature_files",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/feature_files",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
@@ -252,7 +252,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/feature_files_path?search_path=3GPP-23401-4G",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/feature_files_path?search_path=3GPP-23401-4G",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -296,7 +296,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/feature_files_tags",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/feature_files_tags",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -343,7 +343,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/update_config_properties?filename=\"/etc/rebaca-test-suite/config/admin/ABotConfig.properties\"",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/update_config_properties?filename=\"/etc/rebaca-test-suite/config/admin/ABotConfig.properties\"",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -379,7 +379,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/update_config_properties?filename=\"/etc/rebaca-test-suite/config/{{user_id}}/ABotConfig.properties\"",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/update_config_properties?filename=\"/etc/rebaca-test-suite/config/{{user_id}}/ABotConfig.properties\"",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
@@ -479,7 +479,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/feature_files/execute",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/feature_files/execute",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -505,7 +505,7 @@
 							"raw": "{\r\n    \"params\": \"initial-attach-test\"\r\n}"
 						},
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/feature_files/execute",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/feature_files/execute",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
@@ -588,7 +588,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/execution_status",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/execution_status",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -609,7 +609,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/execution_status",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/execution_status",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
@@ -712,7 +712,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/latest_artifact_name",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/latest_artifact_name",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -733,7 +733,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/latest_artifact_name",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/latest_artifact_name",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
@@ -871,7 +871,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/artifacts/execFeatureSummary?foldername=17Jul2023-07:34:48.096650@initial-attach-test&page=1&limit=9998",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/artifacts/execFeatureSummary?foldername=17Jul2023-07:34:48.096650@initial-attach-test&page=1&limit=9998",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
@@ -968,7 +968,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/rca/buildVendorList",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/rca/buildVendorList",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -990,7 +990,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/rca/buildVendorList",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/rca/buildVendorList",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
@@ -1073,7 +1073,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/rca/execFeatureSummary?buildId=default-build&vendorKeys=d015aaeb-e939-4dba-ae2f-71986e0ee210&accessTypes=5G%252C4G%252CORAN&loadState=0,1&executionType=0",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/rca/execFeatureSummary?buildId=default-build&vendorKeys=d015aaeb-e939-4dba-ae2f-71986e0ee210&accessTypes=5G%252C4G%252CORAN&loadState=0,1&executionType=0",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -1117,7 +1117,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/rca/execFeatureSummary?buildId=default-build&vendorKeys=d015aaeb-e939-4dba-ae2f-71986e0ee210&accessTypes=5G%252C4G%252CORAN&loadState=0,1&executionType=0",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/rca/execFeatureSummary?buildId=default-build&vendorKeys=d015aaeb-e939-4dba-ae2f-71986e0ee210&accessTypes=5G%252C4G%252CORAN&loadState=0,1&executionType=0",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
@@ -1222,7 +1222,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/artifacts/execFailureDetails?foldername=17Jul2023-07:34:48.096650@initial-attach-test",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/artifacts/execFailureDetails?foldername=17Jul2023-07:34:48.096650@initial-attach-test",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -1250,7 +1250,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/artifacts/execFailureDetails?foldername=17Jul2023-07:34:48.096650@initial-attach-test",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/artifacts/execFailureDetails?foldername=17Jul2023-07:34:48.096650@initial-attach-test",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
@@ -1339,7 +1339,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/files?path=featureFiles/admin/3GPP-23401-4G/02.Attach_procedure_for_EPS_services/Initial_Attach.feature",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/files?path=featureFiles/admin/3GPP-23401-4G/02.Attach_procedure_for_EPS_services/Initial_Attach.feature",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -1366,7 +1366,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/files?path=featureFiles/{{user_id}}/3GPP-23401-4G/02.Attach_procedure_for_EPS_services/Initial_Attach.feature",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/files?path=featureFiles/{{user_id}}/3GPP-23401-4G/02.Attach_procedure_for_EPS_services/Initial_Attach.feature",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
@@ -1454,7 +1454,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/current_feature_file_list?foldername=17Jul2023-07:34:48.096650@initial-attach-test",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/current_feature_file_list?foldername=17Jul2023-07:34:48.096650@initial-attach-test",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -1481,7 +1481,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/current_feature_file_list?foldername=17Jul2023-07:34:48.096650@initial-attach-test",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/current_feature_file_list?foldername=17Jul2023-07:34:48.096650@initial-attach-test",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
@@ -1569,7 +1569,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/files?path=artifacts/17Jul2023-07:34:48.096650@initial-attach-test/initial_attach/logs/TestAutomationLog.log",
+					"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/files?path=artifacts/17Jul2023-07:34:48.096650@initial-attach-test/initial_attach/logs/TestAutomationLog.log",
 					"protocol": "http",
 					"host": [
 						"{{abot_endpoint}}"
@@ -1596,7 +1596,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{abot_endpoint}}/abotrest/abot/api/v5/files?path=artifacts/17Jul2023-07:34:48.096650@initial-attach-test/initial_attach/logs/TestAutomationLog.log",
+							"raw": "{{abot_endpoint}}/abotrest/abot/api/v5/files?path=artifacts/17Jul2023-07:34:48.096650@initial-attach-test/initial_attach/logs/TestAutomationLog.log",
 							"protocol": "http",
 							"host": [
 								"{{abot_endpoint}}"
