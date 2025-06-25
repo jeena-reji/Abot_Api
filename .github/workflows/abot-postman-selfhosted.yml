@@ -87,11 +87,11 @@ jobs:
         const passed = res?.feature_summary?.result?.totalScenarios?.totalScenariosPassed?.totalScenariosPassedNumber || 0;
         const failed = res?.feature_summary?.result?.totalScenarios?.totalScenariosFailed?.totalScenariosFailedNumber || 0;
         const html = `<!DOCTYPE html><html><body>
-          <h2>ABot Test Summary</h2>
-          <p><strong>Total Scenarios:</strong> ${total}</p>
-          <p><strong>Passed:</strong> ${passed}</p>
-          <p><strong>Failed:</strong> ${failed}</p>
-        </body></html>`;
+<h2>ABot Test Summary</h2>
+<p><strong>Total Scenarios:</strong> ${total}</p>
+<p><strong>Passed:</strong> ${passed}</p>
+<p><strong>Failed:</strong> ${failed}</p>
+</body></html>`;
         fs.writeFileSync(outputPath, html);
         "
 
