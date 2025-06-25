@@ -35,7 +35,8 @@ jobs:
       id: abot_test
       continue-on-error: true
       run: |
-        newman run "postman/ABot API TechM.postman_collection.json" \
+        newman run postman/ABot_API_TechM.postman_collection.json \
+
 
           --environment postman/ABot_Environment.json \
           --reporters cli,json,htmlextra \
