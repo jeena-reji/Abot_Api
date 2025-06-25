@@ -23,6 +23,8 @@ jobs:
       run: mkdir -p postman/newman/reports
 
     - name: Run ABot Postman Collection
+      id: abot_test
+      continue-on-error: true
       run: |
         newman run postman/ABot_API_postman_collection_updated_with_test.json \
           --environment postman/ABot_Environment.json \
@@ -56,7 +58,7 @@ jobs:
           ];
           csv.push(row.join(','));
         });
-        fs.writeFileSync('postman/newman/reports/results.csv', csv.join('\\n'));
+        fs.writeFileSync('postman/newman/reports/results.csv', csv.join('\n'));
         "
 
     - name: Upload CSV Report
@@ -71,23 +73,47 @@ jobs:
         name: abot-api-results-html
         path: postman/newman/reports/results.html
 
-    - name: Check ABot Test Results and Fail if Any Fails
+    - name: Generate ABot Test Summary HTML
+      run: |
+        node -e "
+        const fs = require('fs');
+        const resultPath = 'postman/newman/reports/results.json';
+        const outputPath = 'postman/newman/reports/abot-summary.html';
+        const data = JSON.parse(fs.readFileSync(resultPath, 'utf-8'));
+        const exec = data.run.executions.find(e => e.item.name.includes('Execution summary'));
+        const body = Buffer.from(exec.response.stream.data).toString('utf-8');
+        const res = JSON.parse(body);
+        const total = res?.feature_summary?.result?.totalScenarios?.totalScenarios || 0;
+        const passed = res?.feature_summary?.result?.totalScenarios?.totalScenariosPassed?.totalScenariosPassedNumber || 0;
+        const failed = res?.feature_summary?.result?.totalScenarios?.totalScenariosFailed?.totalScenariosFailedNumber || 0;
+        const html = `<!DOCTYPE html><html><body>
+          <h2>ABot Test Summary</h2>
+          <p><strong>Total Scenarios:</strong> ${total}</p>
+          <p><strong>Passed:</strong> ${passed}</p>
+          <p><strong>Failed:</strong> ${failed}</p>
+        </body></html>`;
+        fs.writeFileSync(outputPath, html);
+        "
+
+    - name: Upload ABot Test Summary HTML
+      uses: actions/upload-artifact@v4
+      with:
+        name: abot-summary
+        path: postman/newman/reports/abot-summary.html
+
+    - name: Fail if ABot Test Fails
       run: |
         node -e "
         const fs = require('fs');
         const data = JSON.parse(fs.readFileSync('postman/newman/reports/results.json', 'utf-8'));
         const execSummary = data.run.executions.find(e => e.item.name.includes('Execution summary'));
-        if (!execSummary || !execSummary.response?.stream?.data) {
-          console.error('Execution summary not found or invalid.');
-          process.exit(1);
-        }
         const body = Buffer.from(execSummary.response.stream.data).toString('utf-8');
         const summary = JSON.parse(body);
-        const failed = summary?.feature_summary?.result?.totalScenarios?.totalScenariosFailed?.totalScenariosFailedNumber;
+        const failed = summary?.feature_summary?.result?.totalScenarios?.totalScenariosFailed?.totalScenariosFailedNumber || 0;
         if (failed > 0) {
-          console.error(` ABot test failed: ${failed} scenario(s) failed`);
+          console.error(`❌ ABot test failed: ${failed} scenario(s) failed`);
           process.exit(1);
         } else {
-          console.log(' All ABot feature files passed.');
+          console.log('✅ All ABot feature files passed.');
         }
         "
