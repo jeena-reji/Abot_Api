@@ -3,7 +3,7 @@
   "name": "ABot Local",
   "values": [
     {
-      "key": "abot_base_url",
+      "key": "abot_endpoint",
       "value": "http://10.176.27.73",
       "enabled": true
     },
