@@ -36,13 +36,13 @@ jobs:
       id: abot_test
       continue-on-error: true
       run: |
-        newman run postman/ABot_API_TechM.postman_collection.json \
+        newman run "postman/ABot_API_TechM.postman_collection.json" \
 
 
-          --environment postman/ABot_Environment.json \
+          --environment "postman/ABot_Environment.json" \
           --reporters cli,json,htmlextra \
-          --reporter-json-export postman/newman/reports/results.json \
-          --reporter-htmlextra-export postman/newman/reports/results.html \
+          --reporter-json-export "postman/newman/reports/results.json" \
+          --reporter-htmlextra-export "postman/newman/reports/results.html" \
           --verbose
 
     - name: Upload HTML Report
@@ -53,25 +53,23 @@ jobs:
 
     - name: Generate ABot Test Summary HTML
       run: |
-        node -e "
-        const fs = require('fs');
-        const resultPath = 'postman/newman/reports/results.json';
-        const outputPath = 'postman/newman/reports/abot-summary.html';
-        const data = JSON.parse(fs.readFileSync(resultPath, 'utf-8'));
-        const exec = data.run.executions.find(e => e.item.name.includes('Execution Summary'));
-        const body = Buffer.from(exec.response.stream.data).toString('utf-8');
-        const res = JSON.parse(body);
-        const total = res?.feature_summary?.result?.totalScenarios?.totalScenarios || 0;
-        const passed = res?.feature_summary?.result?.totalScenarios?.totalScenariosPassed?.totalScenariosPassedNumber || 0;
-        const failed = res?.feature_summary?.result?.totalScenarios?.totalScenariosFailed?.totalScenariosFailedNumber || 0;
-        const html = `<!DOCTYPE html><html><body>` +
-                      `<h2>ABot Test Summary</h2>` +
-                      `<p><strong>Total Scenarios:</strong> ${total}</p>` +
-                      `<p><strong>Passed:</strong> ${passed}</p>` +
-                      `<p><strong>Failed:</strong> ${failed}</p>` +
-                      `</body></html>`;
-        fs.writeFileSync(outputPath, html);
-        "
+         node -e '
+         const fs = require("fs");
+         const data = JSON.parse(fs.readFileSync("postman/newman/reports/results.json", "utf-8"));
+         const exec = data.run.executions.find(e => e.item.name.includes("Execution Summary"));
+         const body = Buffer.from(exec.response.stream.data).toString("utf-8");
+         const summary = JSON.parse(body);
+         const total = summary?.feature_summary?.result?.totalScenarios || 0;
+         const passed = summary?.feature_summary?.result?.totalScenariosPassed?.totalScenariosPassedNumber || 0;
+         const failed = summary?.feature_summary?.result?.totalScenariosFailed?.totalScenariosFailedNumber || 0;
+         const html = `<!DOCTYPE html><html><body>
+                      <h2>ABot Test Summary</h2>
+                      <p><strong>Total:</strong> ${total}</p>
+                      <p><strong>Passed:</strong> ${passed}</p>
+                      <p><strong>Failed:</strong> ${failed}</p>
+                      </body></html>`;
+                         fs.writeFileSync("postman/newman/reports/abot-summary.html", html);
+                         '
 
     - name: Upload ABot Test Summary HTML
       uses: actions/upload-artifact@v4
