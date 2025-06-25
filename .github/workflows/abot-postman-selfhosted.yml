@@ -22,16 +22,16 @@ jobs:
         node-version: '18'
 
     - name: Install Newman & Reporter
-      run: npm install -g newman newman-reporter-htmlextra jq
+      run: npm install -g newman newman-reporter-htmlextra
 
     - name: Create Reports Folder
       run: mkdir -p postman/newman/reports
 
-    - name: Inject dynamic featureTag using sed
+    - name: Inject featureTag using jq
       run: |
-          sed -i 's/"featureTags": *"[^"]*"/"featureTags": "${{ github.event.inputs.feature_tag }}"/' postman/ABot_Environment.json
+        jq '.values |= map(if .key=="featureTags" then .value="${{ github.event.inputs.feature_tag }}" else . end)' postman/ABot_Environment.json > tmp.json && mv tmp.json postman/ABot_Environment.json
 
-    - name: Run ABot Postman Collection
+    - name: Run ABot Postman Collection with CLI Logging
       id: abot_test
       continue-on-error: true
       run: |
@@ -40,7 +40,7 @@ jobs:
           --reporters cli,json,htmlextra \
           --reporter-json-export "postman/newman/reports/results.json" \
           --reporter-htmlextra-export "postman/newman/reports/results.html" \
-          --verbose
+          --verbose | tee postman/newman/reports/cli-log.txt
 
     - name: Upload HTML Report
       if: always()
@@ -49,28 +49,39 @@ jobs:
         name: abot-api-results-html
         path: postman/newman/reports/results.html
 
+    - name: Upload CLI Log
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: abot-cli-log
+        path: postman/newman/reports/cli-log.txt
+
     - name: Generate ABot Test Summary HTML
       if: always()
       run: |
         node -e '
         const fs = require("fs");
         if (!fs.existsSync("postman/newman/reports/results.json")) {
-          console.log("❌ No result file found");
+          console.error("❌ No result file found");
           process.exit(1);
         }
         const data = JSON.parse(fs.readFileSync("postman/newman/reports/results.json", "utf-8"));
         const exec = data.run.executions.find(e => e.item.name.includes("Execution Summary"));
+        if (!exec || !exec.response) {
+          console.error("❌ Execution Summary not found in response");
+          process.exit(1);
+        }
         const body = Buffer.from(exec.response.stream.data).toString("utf-8");
         const summary = JSON.parse(body);
         const total = summary?.feature_summary?.result?.totalScenarios || 0;
         const passed = summary?.feature_summary?.result?.totalScenariosPassed?.totalScenariosPassedNumber || 0;
         const failed = summary?.feature_summary?.result?.totalScenariosFailed?.totalScenariosFailedNumber || 0;
         const html = `<!DOCTYPE html><html><body>
-        <h2>ABot Test Summary</h2>
-        <p><strong>Total:</strong> ${total}</p>
-        <p><strong>Passed:</strong> ${passed}</p>
-        <p><strong>Failed:</strong> ${failed}</p>
-        </body></html>`;
+          <h2>ABot Test Summary</h2>
+          <p><strong>Total:</strong> ${total}</p>
+          <p><strong>Passed:</strong> ${passed}</p>
+          <p><strong>Failed:</strong> ${failed}</p>
+          </body></html>`;
         fs.writeFileSync("postman/newman/reports/abot-summary.html", html);
         '
 
@@ -86,8 +97,8 @@ jobs:
         node -e '
         const fs = require("fs");
         const data = JSON.parse(fs.readFileSync("postman/newman/reports/results.json", "utf-8"));
-        const execSummary = data.run.executions.find(e => e.item.name.includes("Execution Summary"));
-        const body = Buffer.from(execSummary.response.stream.data).toString("utf-8");
+        const exec = data.run.executions.find(e => e.item.name.includes("Execution Summary"));
+        const body = Buffer.from(exec.response.stream.data).toString("utf-8");
         const summary = JSON.parse(body);
         const failed = summary?.feature_summary?.result?.totalScenarios?.totalScenariosFailed?.totalScenariosFailedNumber || 0;
         if (failed > 0) {
