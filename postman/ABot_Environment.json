@@ -3,8 +3,8 @@
   "name": "ABot Local",
   "values": [
     {
-      "key": "abot_endpoint",
-      "value": "10.176.27.73",
+      "key": "abot_base_url",
+      "value": "http://10.176.27.73",
       "enabled": true
     },
     {
@@ -15,6 +15,16 @@
     {
       "key": "user_id",
       "value": "admin",
+      "enabled": true
+    },
+    {
+      "key": "featureTags",
+      "value": "sanity",
+      "enabled": true
+    },
+    {
+      "key": "artifact_folder",
+      "value": "",
       "enabled": true
     }
   ],
