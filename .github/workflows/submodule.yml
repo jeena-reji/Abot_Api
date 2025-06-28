@@ -1,0 +1,102 @@
+name: Update Submodules
+
+on:
+  workflow_dispatch:  # Allow manual trigger
+     inputs:
+      select_all:
+        description: 'Update all submodules?'
+        required: true
+        default: 'no'
+        type: choice
+        options:
+          - 'yes'
+          - 'no'
+      submodules_to_update:
+        description: 'List submodules to update (e.g., ausf amf). Ignored if "Update all" is yes.'
+        required: false
+
+jobs:
+  update_submodules:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: 'true'  # This checks out the submodules as well
+        token: ${{ secrets.AUTO_TOKEN }}
+
+    - name: Determine Submodules to Update
+      id: get_submodules
+      run: |
+          if [[ "${{ github.event.inputs.select_all }}" == "yes" ]]; then
+            SUBMODULES=$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }')
+          else
+            SUBMODULES="${{ github.event.inputs.submodules_to_update }}"
+          fi
+           
+           SUBMODULES=$(echo "$SUBMODULES" |  xargs)
+           echo "Updating submodules: $SUBMODULES"
+           echo "submodules=$SUBMODULES" >> $GITHUB_OUTPUT
+
+    - name: Debug Submodule State
+      run: |
+       
+        echo "Submodule status before update:"
+        git submodule status
+        echo "Submodule logs:"
+        git submodule foreach 'git log -1'
+        echo "Checking for differences in .gitmodules:"
+        git diff .gitmodules || echo "No changes in .gitmodules"
+        
+   
+    - name: Set up Git with PAT for authentication
+      run: |
+        
+        git config --global user.name "Jeena Reji"
+        git config --global user.email "jeenareji77@gmail.com"      
+  
+        
+    - name: Update selected submodules
+      run: |
+          INPUT_SUBMODULES="${{ steps.get_submodules.outputs.submodules }}"
+          for submodule in $INPUT_SUBMODULES; do
+            if [ -d "$submodule" ]; then
+              echo "Updating submodule: $submodule"
+              cd "$submodule"
+              git fetch origin
+              DEFAULT_BRANCH=$(git remote show origin | sed -n "/HEAD branch/s/.*: //p")
+              echo "Default branch: $DEFAULT_BRANCH"
+              if [ -n "$DEFAULT_BRANCH" ]; then
+                git checkout $DEFAULT_BRANCH
+                git pull origin $DEFAULT_BRANCH
+              else
+                echo "Warning: No default branch detected for $submodule"
+              fi
+              cd -
+            else
+              echo "Submodule $submodule not found. Skipping..."
+            fi
+          done
+       
+        
+    - name: Commit and push submodule updates
+      run: |
+         
+          git fetch origin main
+          git rebase origin/main
+          git add .gitmodules
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit, submodules are already up-to-date."
+          else
+            echo "Changes detected. Committing..."
+            git commit -m "Update selected submodules for test release" || echo "No commit created"
+            git push origin main || echo "Push failed (maybe on a different branch)"
+          fi
+
+    - name: Debug Final State
+      run: |
+        
+        echo "Final submodule state:"
+        git submodule status
