@@ -6,13 +6,13 @@ on:
       select_all:
         description: 'Update all submodules?'
         required: true
-        default: 'no'
+        default: 'yes'
         type: choice
         options:
           - 'yes'
           - 'no'
       submodules_to_update:
-        description: 'List submodules to update (e.g., ausf amf). Ignored if "Update all" is yes.'
+        description: 'List submodules to update. Ignored if "Update all" is yes.'
         required: false
 
 jobs:
