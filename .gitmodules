@@ -1,0 +1,6 @@
+[submodule "Abot"]
+	path = Abot
+	url = https://github.com/jeena-reji/Abot.git
+[submodule "test-1"]
+	path = test-1
+	url = https://github.com/jeena-reji/test-1.git
