@@ -1,0 +1,52 @@
+name: Trigger ABot Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      feature_tag:
+        description: 'ABot Feature Tag to Execute (e.g., initial-attach-test)'
+        required: true
+        default: 'initial-attach-test'
+
+jobs:
+  run_abot_test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+
+    - name: Install Newman and jq
+      run: |
+        npm install -g newman
+        sudo apt-get install -y jq
+
+    - name: Login to ABot and fetch token
+      id: login
+      run: |
+        ABOT_URL="http://10.176.27.188:8080"
+        LOGIN=$(curl -s -X POST "$ABOT_URL/abotrest/abot/api/v5/login" \
+          -H "Content-Type: application/json" \
+          -d '{"email": "admin", "password": "admin1234", "expires": false}')
+        TOKEN=$(echo "$LOGIN" | jq -r '.data.token')
+        echo "ABOT_TOKEN=$TOKEN" >> $GITHUB_ENV
+
+    - name: Run ABot Postman Collection
+      run: |
+        newman run ./ABot_API_Modified_For_GitHubActions.postman_collection.json \
+          --env-var "abot_endpoint=10.176.27.188:8080" \
+          --env-var "token=${{ env.ABOT_TOKEN }}" \
+          --env-var "feature_tag=${{ github.event.inputs.feature_tag }}" \
+          --reporters cli,json \
+          --reporter-json-export abot_result.json
+
+    - name: Fail GitHub Workflow if ABot Test Failed
+      run: |
+        EXIT_CODE=$(jq -r '.environment.values[] | select(.key=="exit_code") | .value' abot_result.json)
+        echo "ABot exit_code: $EXIT_CODE"
+        if [ "$EXIT_CODE" != "0" ]; then
+          echo "ABot test failed. Failing workflow."
+          exit 1
+        else
+          echo "ABot test passed."
+        fi
