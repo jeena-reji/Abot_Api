@@ -18,7 +18,8 @@ jobs:
 
     
     - name: Install Newman & Reporter
-      run: npm install -g newman newman-reporter-htmlextra
+      run: sudo npm install -g newman newman-reporter-htmlextra
+
 
 
     - name: Login to ABot and fetch token
