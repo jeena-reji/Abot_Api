@@ -17,11 +17,9 @@ jobs:
       uses: actions/checkout@v3
 
     
-    - name: Install Newman and jq (if not already installed)
-      run: |
-         sudo apt-get update
-         sudo apt-get install -y jq
-         sudo npm install -g newman
+    - name: Install Newman & Reporter
+      run: npm install -g newman newman-reporter-htmlextra
+
 
     - name: Login to ABot and fetch token
       id: login
@@ -39,8 +37,8 @@ jobs:
           --env-var "abot_endpoint=10.176.27.188:8080" \
           --env-var "token=${{ env.ABOT_TOKEN }}" \
           --env-var "feature_tag=${{ github.event.inputs.feature_tag }}" \
-          --reporters cli,json \
-          --reporter-json-export abot_result.json
+          --reporters cli,htmlextra \
+          --reporter-json-export abot_result.html
 
     - name: Fail GitHub Workflow if ABot Test Failed
       run: |
