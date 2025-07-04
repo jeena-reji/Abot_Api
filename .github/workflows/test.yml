@@ -18,8 +18,9 @@ jobs:
 
     - name: Install Newman and jq
       run: |
-        npm install -g newman
-        sudo apt-get install -y jq
+         curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+         sudo apt-get install -y nodejs jq
+         sudo npm install -g newman
 
     - name: Login to ABot and fetch token
       id: login
