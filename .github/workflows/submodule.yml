@@ -74,7 +74,7 @@ jobs:
             echo "Updating submodule: $submodule"
             cd "$submodule"
     
-            # 🔥 Make sure we have full history + tags
+            #  Make sure we have full history + tags
             git fetch origin +refs/heads/*:refs/remotes/origin/* --tags
 
     
