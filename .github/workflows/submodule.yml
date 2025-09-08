@@ -6,13 +6,16 @@ on:
       select_all:
         description: 'Update all submodules?'
         required: true
-        default: 'yes'
+        default: 'no'
         type: choice
         options:
           - 'yes'
           - 'no'
       submodules_to_update:
-        description: 'List submodules to update. Ignored if "Update all" is yes.'
+        description: 'List submodules to update (e.g., ausf amf). Ignored if "Update all" is yes.'
+        required: false
+      custom_versions:
+        description: 'Override submodule versions (format: submodule@commitOrTag e.g., upf@c20c505 amf@v1.0.0)'
         required: false
 
 jobs:
@@ -23,7 +26,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        submodules: 'true'  # This checks out the submodules as well
+        submodules: 'true'
         token: ${{ secrets.AUTO_TOKEN }}
 
     - name: Determine Submodules to Update
@@ -35,54 +38,65 @@ jobs:
             SUBMODULES="${{ github.event.inputs.submodules_to_update }}"
           fi
            
-           SUBMODULES=$(echo "$SUBMODULES" |  xargs)
-           echo "Updating submodules: $SUBMODULES"
-           echo "submodules=$SUBMODULES" >> $GITHUB_OUTPUT
+          SUBMODULES=$(echo "$SUBMODULES" | xargs)
+          echo "Updating submodules: $SUBMODULES"
+          echo "submodules=$SUBMODULES" >> $GITHUB_OUTPUT
+          echo "custom_versions=${{ github.event.inputs.custom_versions }}" >> $GITHUB_OUTPUT
 
     - name: Debug Submodule State
       run: |
-       
         echo "Submodule status before update:"
         git submodule status
         echo "Submodule logs:"
         git submodule foreach 'git log -1'
-        echo "Checking for differences in .gitmodules:"
-        git diff .gitmodules || echo "No changes in .gitmodules"
-        
-   
+
     - name: Set up Git with PAT for authentication
       run: |
-        
         git config --global user.name "Jeena Reji"
-        git config --global user.email "jeenareji77@gmail.com"      
-  
-        
+        git config --global user.email "jeenareji77@gmail.com"
+
     - name: Update selected submodules
       run: |
           INPUT_SUBMODULES="${{ steps.get_submodules.outputs.submodules }}"
+          CUSTOM_VERSIONS="${{ steps.get_submodules.outputs.custom_versions }}"
+
+          declare -A VERSION_MAP
+          for entry in $CUSTOM_VERSIONS; do
+            submodule="${entry%@*}"
+            version="${entry#*@}"
+            VERSION_MAP[$submodule]=$version
+          done
+
           for submodule in $INPUT_SUBMODULES; do
             if [ -d "$submodule" ]; then
               echo "Updating submodule: $submodule"
               cd "$submodule"
               git fetch origin
-              DEFAULT_BRANCH=$(git remote show origin | sed -n "/HEAD branch/s/.*: //p")
-              echo "Default branch: $DEFAULT_BRANCH"
-              if [ -n "$DEFAULT_BRANCH" ]; then
-                git checkout $DEFAULT_BRANCH
-                git pull origin $DEFAULT_BRANCH
+
+              if [[ -n "${VERSION_MAP[$submodule]}" ]]; then
+                echo "→ Pinned to ${VERSION_MAP[$submodule]}"
+                git checkout "${VERSION_MAP[$submodule]}" || {
+                  echo "Failed to checkout ${VERSION_MAP[$submodule]} in $submodule"
+                }
               else
-                echo "Warning: No default branch detected for $submodule"
+                DEFAULT_BRANCH=$(git remote show origin | sed -n "/HEAD branch/s/.*: //p")
+                echo "→ Default branch: $DEFAULT_BRANCH"
+                if [ -n "$DEFAULT_BRANCH" ]; then
+                  git checkout $DEFAULT_BRANCH
+                  git pull origin $DEFAULT_BRANCH
+                else
+                  echo "Warning: No default branch detected for $submodule"
+                fi
               fi
+
               cd -
             else
               echo "Submodule $submodule not found. Skipping..."
             fi
           done
-       
-        
+
     - name: Commit and push submodule updates
       run: |
-         
           git fetch origin main
           git rebase origin/main
           git add .gitmodules
@@ -91,12 +105,11 @@ jobs:
             echo "No changes to commit, submodules are already up-to-date."
           else
             echo "Changes detected. Committing..."
-            git commit -m "Update selected submodules for test release" || echo "No commit created"
-            git push origin main || echo "Push failed (maybe on a different branch)"
+            git commit -m "Update submodules (with overrides if specified)" || echo "No commit created"
+            git push origin main || echo "push failed (maybe on a different branch)"
           fi
 
     - name: Debug Final State
       run: |
-        
         echo "Final submodule state:"
         git submodule status
