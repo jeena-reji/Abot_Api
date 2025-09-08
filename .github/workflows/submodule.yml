@@ -75,7 +75,8 @@ jobs:
               echo "Updating submodule: $submodule"
               cd "$submodule"
 
-              git fetch origin
+              git fetch origin +refs/heads/*:refs/remotes/origin/* --tags
+
 
               if [[ -n "${VERSION_MAP[$submodule]}" ]]; then
                 echo "→ Pinned to ${VERSION_MAP[$submodule]}"
