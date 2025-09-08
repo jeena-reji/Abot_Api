@@ -114,4 +114,4 @@ jobs:
     - name: Debug Final State
       run: |
         echo "Final submodule state:"
-        git submodule status
+        git submodule foreach 'echo "$(git rev-parse HEAD) $name"'
