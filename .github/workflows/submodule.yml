@@ -24,10 +24,12 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
       with:
         submodules: 'true'
+        fetch-depth: 0          # full history
         token: ${{ secrets.AUTO_TOKEN }}
+
 
     - name: Determine Submodules to Update
       id: get_submodules
@@ -73,7 +75,8 @@ jobs:
             cd "$submodule"
     
             # 🔥 Make sure we have full history + tags
-            git fetch --all --tags --prune
+            git fetch origin +refs/heads/*:refs/remotes/origin/* --tags
+
     
             if [[ -n "${VERSION_MAP[$submodule]}" ]]; then
               echo "→ Pinned to ${VERSION_MAP[$submodule]}"
