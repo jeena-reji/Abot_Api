@@ -72,7 +72,8 @@ jobs:
             echo "Updating submodule: $submodule"
             cd "$submodule"
     
-            git fetch origin
+            # 🔥 Make sure we have full history + tags
+            git fetch --all --tags --prune
     
             if [[ -n "${VERSION_MAP[$submodule]}" ]]; then
               echo "→ Pinned to ${VERSION_MAP[$submodule]}"
@@ -83,7 +84,7 @@ jobs:
               DEFAULT_BRANCH=$(git remote show origin | sed -n "/HEAD branch/s/.*: //p")
               echo "→ Default branch: $DEFAULT_BRANCH"
               git checkout $DEFAULT_BRANCH
-              git reset --hard origin/$DEFAULT_BRANCH   # <<< force move to latest commit
+              git reset --hard origin/$DEFAULT_BRANCH
             fi
     
             cd -
@@ -91,6 +92,7 @@ jobs:
             echo "Submodule $submodule not found. Skipping..."
           fi
         done
+
 
     - name: Commit and push submodule updates
       run: |
