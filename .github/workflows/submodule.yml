@@ -1,8 +1,8 @@
 name: Update Submodules
 
 on:
-  workflow_dispatch:  # Allow manual trigger
-     inputs:
+  workflow_dispatch:
+    inputs:
       select_all:
         description: 'Update all submodules?'
         required: true
@@ -24,26 +24,25 @@ jobs:
 
     steps:
     - name: Checkout repository
-    - uses: actions/checkout@v4
+      uses: actions/checkout@v4
       with:
         submodules: 'true'
-        fetch-depth: 0          # full history
+        fetch-depth: 0
         token: ${{ secrets.AUTO_TOKEN }}
-
 
     - name: Determine Submodules to Update
       id: get_submodules
       run: |
-          if [[ "${{ github.event.inputs.select_all }}" == "yes" ]]; then
-            SUBMODULES=$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }')
-          else
-            SUBMODULES="${{ github.event.inputs.submodules_to_update }}"
-          fi
-           
-          SUBMODULES=$(echo "$SUBMODULES" | xargs)
-          echo "Updating submodules: $SUBMODULES"
-          echo "submodules=$SUBMODULES" >> $GITHUB_OUTPUT
-          echo "custom_versions=${{ github.event.inputs.custom_versions }}" >> $GITHUB_OUTPUT
+        if [[ "${{ github.event.inputs.select_all }}" == "yes" ]]; then
+          SUBMODULES=$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }')
+        else
+          SUBMODULES="${{ github.event.inputs.submodules_to_update }}"
+        fi
+
+        SUBMODULES=$(echo "$SUBMODULES" | xargs)
+        echo "Updating submodules: $SUBMODULES"
+        echo "submodules=$SUBMODULES" >> $GITHUB_OUTPUT
+        echo "custom_versions=${{ github.event.inputs.custom_versions }}" >> $GITHUB_OUTPUT
 
     - name: Debug Submodule State
       run: |
@@ -61,23 +60,22 @@ jobs:
       run: |
         INPUT_SUBMODULES="${{ steps.get_submodules.outputs.submodules }}"
         CUSTOM_VERSIONS="${{ steps.get_submodules.outputs.custom_versions }}"
-    
+
         declare -A VERSION_MAP
         for entry in $CUSTOM_VERSIONS; do
           submodule="${entry%@*}"
           version="${entry#*@}"
           VERSION_MAP[$submodule]=$version
         done
-    
+
         for submodule in $INPUT_SUBMODULES; do
           if [ -d "$submodule" ]; then
             echo "Updating submodule: $submodule"
             cd "$submodule"
-    
-            #  Make sure we have full history + tags
+
+            # Fetch all branches and tags
             git fetch origin +refs/heads/*:refs/remotes/origin/* --tags
 
-    
             if [[ -n "${VERSION_MAP[$submodule]}" ]]; then
               echo "→ Pinned to ${VERSION_MAP[$submodule]}"
               git checkout "${VERSION_MAP[$submodule]}" || {
@@ -89,27 +87,28 @@ jobs:
               git checkout $DEFAULT_BRANCH
               git reset --hard origin/$DEFAULT_BRANCH
             fi
-    
+
             cd -
           else
             echo "Submodule $submodule not found. Skipping..."
           fi
         done
 
-
     - name: Commit and push submodule updates
       run: |
-          git fetch origin main
-          git rebase origin/main
-          git add .gitmodules
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No changes to commit, submodules are already up-to-date."
-          else
-            echo "Changes detected. Committing..."
-            git commit -m "Update submodules (with overrides if specified)" || echo "No commit created"
-            git push origin main || echo "push failed (maybe on a different branch)"
-          fi
+        git fetch origin main
+        git rebase origin/main || echo "Rebase failed, maybe on a different branch"
+
+        git add .gitmodules
+        git add -A
+
+        if git diff --cached --quiet; then
+          echo "No changes to commit, submodules are already up-to-date."
+        else
+          echo "Changes detected. Committing..."
+          git commit -m "Update submodules (with overrides if specified)" || echo "No commit created"
+          git push origin main || echo "Push failed (maybe on a different branch)"
+        fi
 
     - name: Debug Final State
       run: |
