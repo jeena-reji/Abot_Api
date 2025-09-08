@@ -57,43 +57,40 @@ jobs:
 
     - name: Update selected submodules
       run: |
-          INPUT_SUBMODULES="${{ steps.get_submodules.outputs.submodules }}"
-          CUSTOM_VERSIONS="${{ steps.get_submodules.outputs.custom_versions }}"
-
-          declare -A VERSION_MAP
-          for entry in $CUSTOM_VERSIONS; do
-            submodule="${entry%@*}"
-            version="${entry#*@}"
-            VERSION_MAP[$submodule]=$version
-          done
-
-          for submodule in $INPUT_SUBMODULES; do
-            if [ -d "$submodule" ]; then
-              echo "Updating submodule: $submodule"
-              cd "$submodule"
-              git fetch origin
-
-              if [[ -n "${VERSION_MAP[$submodule]}" ]]; then
-                echo "→ Pinned to ${VERSION_MAP[$submodule]}"
-                git checkout "${VERSION_MAP[$submodule]}" || {
-                  echo "Failed to checkout ${VERSION_MAP[$submodule]} in $submodule"
-                }
-              else
-                DEFAULT_BRANCH=$(git remote show origin | sed -n "/HEAD branch/s/.*: //p")
-                echo "→ Default branch: $DEFAULT_BRANCH"
-                if [ -n "$DEFAULT_BRANCH" ]; then
-                  git checkout $DEFAULT_BRANCH
-                  git pull origin $DEFAULT_BRANCH
-                else
-                  echo "Warning: No default branch detected for $submodule"
-                fi
-              fi
-
-              cd -
+        INPUT_SUBMODULES="${{ steps.get_submodules.outputs.submodules }}"
+        CUSTOM_VERSIONS="${{ steps.get_submodules.outputs.custom_versions }}"
+    
+        declare -A VERSION_MAP
+        for entry in $CUSTOM_VERSIONS; do
+          submodule="${entry%@*}"
+          version="${entry#*@}"
+          VERSION_MAP[$submodule]=$version
+        done
+    
+        for submodule in $INPUT_SUBMODULES; do
+          if [ -d "$submodule" ]; then
+            echo "Updating submodule: $submodule"
+            cd "$submodule"
+    
+            git fetch origin
+    
+            if [[ -n "${VERSION_MAP[$submodule]}" ]]; then
+              echo "→ Pinned to ${VERSION_MAP[$submodule]}"
+              git checkout "${VERSION_MAP[$submodule]}" || {
+                echo "Failed to checkout ${VERSION_MAP[$submodule]} in $submodule"
+              }
             else
-              echo "Submodule $submodule not found. Skipping..."
+              DEFAULT_BRANCH=$(git remote show origin | sed -n "/HEAD branch/s/.*: //p")
+              echo "→ Default branch: $DEFAULT_BRANCH"
+              git checkout $DEFAULT_BRANCH
+              git reset --hard origin/$DEFAULT_BRANCH   # <<< force move to latest commit
             fi
-          done
+    
+            cd -
+          else
+            echo "Submodule $submodule not found. Skipping..."
+          fi
+        done
 
     - name: Commit and push submodule updates
       run: |
