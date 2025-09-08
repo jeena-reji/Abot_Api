@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       select_all:
-        description: 'Update all submodules? Choose "yes" to update all, "no" to update specific ones.'
+        description: 'Update all submodules?'
         required: true
         default: 'no'
         type: choice
